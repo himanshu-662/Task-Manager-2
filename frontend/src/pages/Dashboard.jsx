@@ -6,7 +6,7 @@ import TaskCard from '../components/TaskCard';
 import { 
   Plus, Layout, ListChecks, Clock, AlertCircle, 
   BarChart3, Users, FolderPlus, Search, Filter,
-  Activity, Zap, Edit, Trash2
+  Activity, Zap, Edit, Trash2, Star
 } from 'lucide-react';
 import { 
   PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend,
@@ -98,6 +98,26 @@ const Dashboard = () => {
       { name: 'Medium', count: priorityCounts.medium, color: '#f59e0b' },
       { name: 'Low', count: priorityCounts.low, color: '#0ea5e9' },
     ];
+  }, [tasks]);
+  
+  // Member Ratings Calculation
+  const memberRatings = useMemo(() => {
+    const ratings = {};
+    tasks.forEach(task => {
+      if (task.assignedTo && task.qualityScore != null) {
+        if (!ratings[task.assignedTo]) {
+          ratings[task.assignedTo] = { total: 0, count: 0 };
+        }
+        ratings[task.assignedTo].total += task.qualityScore;
+        ratings[task.assignedTo].count += 1;
+      }
+    });
+    
+    const averages = {};
+    Object.keys(ratings).forEach(email => {
+      averages[email] = (ratings[email].total / ratings[email].count).toFixed(1);
+    });
+    return averages;
   }, [tasks]);
 
   const handleSubmitTask = async (e) => {
@@ -416,9 +436,34 @@ const Dashboard = () => {
               </h2>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                 {members.map(m => (
-                  <div key={m.email} style={{ fontSize: '0.875rem' }}>
-                    <p style={{ fontWeight: 600 }}>{m.name}</p>
-                    <p style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>{m.email}</p>
+                  <div key={m.email} style={{ 
+                    padding: '0.75rem', 
+                    borderRadius: '8px', 
+                    background: 'var(--background)',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center'
+                  }}>
+                    <div>
+                      <p style={{ fontWeight: 600, fontSize: '0.875rem' }}>{m.name}</p>
+                      <p style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>{m.email}</p>
+                    </div>
+                    {memberRatings[m.email] && (
+                      <div style={{ 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        gap: '4px', 
+                        background: 'rgba(245, 158, 11, 0.1)', 
+                        padding: '4px 8px', 
+                        borderRadius: '6px',
+                        color: 'var(--warning)',
+                        fontWeight: 700,
+                        fontSize: '0.875rem'
+                      }}>
+                        <Star size={14} fill="var(--warning)" />
+                        {memberRatings[m.email]}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
