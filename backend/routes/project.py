@@ -35,3 +35,20 @@ async def get_projects(user: dict = Depends(verify_token)):
     projects_cursor = db.projects.find()
     projects = await projects_cursor.to_list(length=1000)
     return [format_doc(p) for p in projects]
+@router.put("/{project_id}")
+async def update_project(project_id: str, data: dict = Body(...), user: dict = Depends(verify_token)):
+    if user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Only admins can update projects")
+    
+    db = get_db()
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database connection not available")
+        
+    project = await db.projects.find_one({"_id": project_id})
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+        
+    await db.projects.update_one({"_id": project_id}, {"$set": data})
+    
+    updated_project = await db.projects.find_one({"_id": project_id})
+    return format_doc(updated_project)

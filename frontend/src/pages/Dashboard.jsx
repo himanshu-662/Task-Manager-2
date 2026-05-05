@@ -6,7 +6,7 @@ import TaskCard from '../components/TaskCard';
 import { 
   Plus, Layout, ListChecks, Clock, AlertCircle, 
   BarChart3, Users, FolderPlus, Search, Filter,
-  Activity, Zap
+  Activity, Zap, Edit
 } from 'lucide-react';
 import { 
   PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend,
@@ -22,6 +22,8 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [showProjectForm, setShowProjectForm] = useState(false);
+  const [editingTask, setEditingTask] = useState(null);
+  const [editingProject, setEditingProject] = useState(null);
   
   // Search and Filter State
   const [searchTerm, setSearchTerm] = useState('');
@@ -98,30 +100,60 @@ const Dashboard = () => {
     ];
   }, [tasks]);
 
-  const handleCreateTask = async (e) => {
+  const handleSubmitTask = async (e) => {
     e.preventDefault();
     try {
-      await api.post('/task/', newTask);
-      toast.success('Task created and assigned!');
+      if (editingTask) {
+        await api.put(`/task/${editingTask._id}`, newTask);
+        toast.success('Task updated!');
+      } else {
+        await api.post('/task/', newTask);
+        toast.success('Task created and assigned!');
+      }
       setNewTask({ title: '', projectId: '', priority: 'medium', status: 'pending', assignedTo: '' });
+      setEditingTask(null);
       setShowTaskForm(false);
       fetchData();
     } catch (err) {
-      toast.error(err.message || 'Failed to create task');
+      toast.error(err.message || 'Failed to process task');
     }
   };
 
-  const handleCreateProject = async (e) => {
+  const handleSubmitProject = async (e) => {
     e.preventDefault();
     try {
-      await api.post('/project/', newProject);
-      toast.success('Project created!');
+      if (editingProject) {
+        await api.put(`/project/${editingProject._id}`, newProject);
+        toast.success('Project updated!');
+      } else {
+        await api.post('/project/', newProject);
+        toast.success('Project created!');
+      }
       setNewProject({ name: '' });
+      setEditingProject(null);
       setShowProjectForm(false);
       fetchData();
     } catch (err) {
-      toast.error(err.message || 'Failed to create project');
+      toast.error(err.message || 'Failed to process project');
     }
+  };
+
+  const handleEditTask = (task) => {
+    setEditingTask(task);
+    setNewTask({
+      title: task.title,
+      projectId: task.projectId?._id || task.projectId,
+      priority: task.priority,
+      status: task.status,
+      assignedTo: task.assignedTo
+    });
+    setShowTaskForm(true);
+  };
+
+  const handleEditProject = (project) => {
+    setEditingProject(project);
+    setNewProject({ name: project.name });
+    setShowProjectForm(true);
   };
 
   const handleUpdateTask = async (id, updates) => {
@@ -304,7 +336,7 @@ const Dashboard = () => {
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               {filteredTasks.map(task => (
-                <TaskCard key={task._id} task={task} onUpdate={handleUpdateTask} userRole={user.role} />
+                <TaskCard key={task._id} task={task} onUpdate={handleUpdateTask} onEdit={handleEditTask} userRole={user.role} />
               ))}
             </div>
           )}
@@ -326,8 +358,19 @@ const Dashboard = () => {
                   alignItems: 'center',
                   gap: '0.75rem'
                 }}>
-                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--primary)' }} />
-                  {p.name}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1 }}>
+                    <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--primary)' }} />
+                    {p.name}
+                  </div>
+                  {user.role === 'admin' && (
+                    <button 
+                      onClick={() => handleEditProject(p)}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '4px' }}
+                      title="Edit Project"
+                    >
+                      <Edit size={14} />
+                    </button>
+                  )}
                 </div>
               ))}
               {projects.length === 0 && <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>No projects available.</p>}
@@ -357,8 +400,8 @@ const Dashboard = () => {
       {showProjectForm && (
         <div className="modal-overlay">
           <Card style={{ width: '100%', maxWidth: '400px' }}>
-            <h2 style={{ marginBottom: '1.5rem' }}>Create New Project</h2>
-            <form onSubmit={handleCreateProject}>
+            <h2 style={{ marginBottom: '1.5rem' }}>{editingProject ? 'Edit Project' : 'Create New Project'}</h2>
+            <form onSubmit={handleSubmitProject}>
               <Input 
                 label="Project Name"
                 placeholder="e.g. Marketing Q3"
@@ -367,8 +410,8 @@ const Dashboard = () => {
                 onChange={(e) => setNewProject({ ...newProject, name: e.target.value })}
               />
               <div style={{ display: 'flex', gap: '1rem' }}>
-                <Button variant="ghost" onClick={() => setShowProjectForm(false)} style={{ flex: 1 }}>Cancel</Button>
-                <Button type="submit" style={{ flex: 1 }}>Create Project</Button>
+                <Button variant="ghost" onClick={() => { setShowProjectForm(false); setEditingProject(null); setNewProject({ name: '' }); }} style={{ flex: 1 }}>Cancel</Button>
+                <Button type="submit" style={{ flex: 1 }}>{editingProject ? 'Save Changes' : 'Create Project'}</Button>
               </div>
             </form>
           </Card>
@@ -379,8 +422,8 @@ const Dashboard = () => {
       {showTaskForm && (
         <div className="modal-overlay">
           <Card style={{ width: '100%', maxWidth: '500px' }}>
-            <h2 style={{ marginBottom: '1.5rem' }}>Create New Task</h2>
-            <form onSubmit={handleCreateTask}>
+            <h2 style={{ marginBottom: '1.5rem' }}>{editingTask ? 'Edit Task' : 'Create New Task'}</h2>
+            <form onSubmit={handleSubmitTask}>
               <Input 
                 label="Task Title"
                 placeholder="What needs to be done?"
@@ -435,8 +478,8 @@ const Dashboard = () => {
               </div>
 
               <div style={{ display: 'flex', gap: '1rem' }}>
-                <Button variant="ghost" onClick={() => setShowTaskForm(false)} style={{ flex: 1 }}>Cancel</Button>
-                <Button type="submit" style={{ flex: 1 }}>Create Task</Button>
+                <Button variant="ghost" onClick={() => { setShowTaskForm(false); setEditingTask(null); setNewTask({ title: '', projectId: '', priority: 'medium', status: 'pending', assignedTo: '' }); }} style={{ flex: 1 }}>Cancel</Button>
+                <Button type="submit" style={{ flex: 1 }}>{editingTask ? 'Save Changes' : 'Create Task'}</Button>
               </div>
             </form>
           </Card>

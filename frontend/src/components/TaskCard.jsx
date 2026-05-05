@@ -1,8 +1,8 @@
-import { CheckCircle2, Clock, Star, User } from 'lucide-react';
+import { CheckCircle2, Clock, Star, User, Edit } from 'lucide-react';
 import { Card, Button } from './common/UI';
 import { useState } from 'react';
 
-const TaskCard = ({ task, onUpdate, userRole }) => {
+const TaskCard = ({ task, onUpdate, onEdit, userRole }) => {
   const [showEval, setShowEval] = useState(false);
   const [score, setScore] = useState(task.qualityScore || 0);
 
@@ -98,6 +98,18 @@ const TaskCard = ({ task, onUpdate, userRole }) => {
             <option value="in-progress">In Progress</option>
             <option value="completed">Done</option>
           </select>
+
+          {userRole === 'admin' && (
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => onEdit(task)}
+              style={{ padding: '4px 8px', fontSize: '0.75rem', color: 'var(--text-muted)' }}
+              title="Edit Task"
+            >
+              <Edit size={16} />
+            </Button>
+          )}
 
           {userRole === 'admin' && (task.status === 'completed' || task.status === 'Done') && (
             <Button 
