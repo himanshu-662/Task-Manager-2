@@ -6,7 +6,7 @@ import TaskCard from '../components/TaskCard';
 import { 
   Plus, Layout, ListChecks, Clock, AlertCircle, 
   BarChart3, Users, FolderPlus, Search, Filter,
-  Activity, Zap, Edit
+  Activity, Zap, Edit, Trash2
 } from 'lucide-react';
 import { 
   PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend,
@@ -154,6 +154,28 @@ const Dashboard = () => {
     setEditingProject(project);
     setNewProject({ name: project.name });
     setShowProjectForm(true);
+  };
+
+  const handleDeleteTask = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this task?')) return;
+    try {
+      await api.delete(`/task/${id}`);
+      toast.success('Task deleted');
+      fetchData();
+    } catch (err) {
+      toast.error(err.message || 'Delete failed');
+    }
+  };
+
+  const handleDeleteProject = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this project? This will also delete all associated tasks.')) return;
+    try {
+      await api.delete(`/project/${id}`);
+      toast.success('Project deleted');
+      fetchData();
+    } catch (err) {
+      toast.error(err.message || 'Delete failed');
+    }
   };
 
   const handleUpdateTask = async (id, updates) => {
@@ -336,7 +358,7 @@ const Dashboard = () => {
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               {filteredTasks.map(task => (
-                <TaskCard key={task._id} task={task} onUpdate={handleUpdateTask} onEdit={handleEditTask} userRole={user.role} />
+                <TaskCard key={task._id} task={task} onUpdate={handleUpdateTask} onEdit={handleEditTask} onDelete={handleDeleteTask} userRole={user.role} />
               ))}
             </div>
           )}
@@ -363,13 +385,22 @@ const Dashboard = () => {
                     {p.name}
                   </div>
                   {user.role === 'admin' && (
-                    <button 
-                      onClick={() => handleEditProject(p)}
-                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '4px' }}
-                      title="Edit Project"
-                    >
-                      <Edit size={14} />
-                    </button>
+                    <div style={{ display: 'flex', gap: '4px' }}>
+                      <button 
+                        onClick={() => handleEditProject(p)}
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '4px' }}
+                        title="Edit Project"
+                      >
+                        <Edit size={14} />
+                      </button>
+                      <button 
+                        onClick={() => handleDeleteProject(p._id)}
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--danger)', padding: '4px' }}
+                        title="Delete Project"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
                   )}
                 </div>
               ))}

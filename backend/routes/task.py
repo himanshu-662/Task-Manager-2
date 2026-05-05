@@ -86,3 +86,17 @@ async def update_task(task_id: str, data: dict = Body(...), user: dict = Depends
     
     updated_task = await db.tasks.find_one({"_id": task_id})
     return format_doc(updated_task)
+@router.delete("/{task_id}")
+async def delete_task(task_id: str, user: dict = Depends(verify_token)):
+    if user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Only admins can delete tasks")
+    
+    db = get_db()
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database connection not available")
+        
+    result = await db.tasks.delete_one({"_id": task_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Task not found")
+        
+    return {"message": "Task deleted successfully"}

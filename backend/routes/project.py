@@ -52,3 +52,21 @@ async def update_project(project_id: str, data: dict = Body(...), user: dict = D
     
     updated_project = await db.projects.find_one({"_id": project_id})
     return format_doc(updated_project)
+@router.delete("/{project_id}")
+async def delete_project(project_id: str, user: dict = Depends(verify_token)):
+    if user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Only admins can delete projects")
+    
+    db = get_db()
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database connection not available")
+        
+    # Delete the project
+    result = await db.projects.delete_one({"_id": project_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Project not found")
+        
+    # Cascading delete tasks associated with this project
+    await db.tasks.delete_many({"projectId": project_id})
+    
+    return {"message": "Project and associated tasks deleted successfully"}
