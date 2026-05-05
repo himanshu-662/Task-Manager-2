@@ -2,7 +2,7 @@ import { CheckCircle2, Clock, Star, User, Edit, Trash2 } from 'lucide-react';
 import { Card, Button } from './common/UI';
 import { useState } from 'react';
 
-const TaskCard = ({ task, onUpdate, onEdit, onDelete, userRole }) => {
+const TaskCard = ({ task, onUpdate, onEdit, onDelete, userRole, memberRatings }) => {
   const [showEval, setShowEval] = useState(false);
   const [score, setScore] = useState(task.qualityScore || 0);
 
@@ -57,6 +57,19 @@ const TaskCard = ({ task, onUpdate, onEdit, onDelete, userRole }) => {
               <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
                 <User size={12} />
                 {task.assignedTo || 'Unassigned'}
+                {task.assignedTo && memberRatings && memberRatings[task.assignedTo] && (
+                  <span style={{ 
+                    color: getScoreColor(memberRatings[task.assignedTo]),
+                    fontWeight: 700,
+                    marginLeft: '4px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '2px'
+                  }}>
+                    <Star size={10} fill={getScoreColor(memberRatings[task.assignedTo])} />
+                    {memberRatings[task.assignedTo]}
+                  </span>
+                )}
               </span>
               <span style={{ 
                 fontSize: '0.7rem', 

@@ -1,11 +1,38 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { LogOut, LayoutDashboard, CheckSquare, Plus, User } from 'lucide-react';
+import { LogOut, LayoutDashboard, CheckSquare, Plus, User, Star } from 'lucide-react';
 import { Button } from './common/UI';
+import { useState, useEffect } from 'react';
+import { api } from '../services/api';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [rating, setRating] = useState(null);
+
+  useEffect(() => {
+    const fetchUserRating = async () => {
+      if (!user) return;
+      try {
+        const tasks = await api.get('/task/');
+        const userTasks = tasks.filter(t => t.assignedTo === user.email && t.qualityScore != null);
+        if (userTasks.length > 0) {
+          const avg = userTasks.reduce((acc, t) => acc + t.qualityScore, 0) / userTasks.length;
+          setRating(avg.toFixed(1));
+        }
+      } catch (err) {
+        console.error('Failed to fetch rating:', err);
+      }
+    };
+    fetchUserRating();
+  }, [user]);
+
+  const getRatingColor = (r) => {
+    const num = parseFloat(r);
+    if (num <= 3) return '#ef4444';
+    if (num <= 8) return '#f59e0b';
+    return '#10b981';
+  };
 
   const handleLogout = () => {
     logout();
@@ -56,7 +83,25 @@ const Navbar = () => {
             {user.name[0].toUpperCase()}
           </div>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <span style={{ fontSize: '0.875rem', fontWeight: 600 }}>{user.name}</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <span style={{ fontSize: '0.875rem', fontWeight: 600 }}>{user.name}</span>
+              {rating && (
+                <div style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '2px', 
+                  fontSize: '0.75rem', 
+                  fontWeight: 700, 
+                  color: getRatingColor(rating),
+                  background: `${getRatingColor(rating)}15`,
+                  padding: '1px 6px',
+                  borderRadius: '4px'
+                }}>
+                  <Star size={10} fill={getRatingColor(rating)} />
+                  {rating}
+                </div>
+              )}
+            </div>
             <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{user.role}</span>
           </div>
         </div>

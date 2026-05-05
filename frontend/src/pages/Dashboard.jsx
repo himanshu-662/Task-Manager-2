@@ -385,7 +385,15 @@ const Dashboard = () => {
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               {filteredTasks.map(task => (
-                <TaskCard key={task._id} task={task} onUpdate={handleUpdateTask} onEdit={handleEditTask} onDelete={handleDeleteTask} userRole={user.role} />
+                <TaskCard 
+                  key={task._id} 
+                  task={task} 
+                  onUpdate={handleUpdateTask} 
+                  onEdit={handleEditTask} 
+                  onDelete={handleDeleteTask} 
+                  userRole={user.role} 
+                  memberRatings={memberRatings}
+                />
               ))}
             </div>
           )}
