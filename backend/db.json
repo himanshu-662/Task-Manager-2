@@ -1,0 +1,111 @@
+{
+  "users": [
+    {
+      "_id": "o81fi992omoobq1pa",
+      "name": "Test User",
+      "email": "test@example.com",
+      "password": "$2b$10$1pdJYKL8vQCY.C81PUqT/elLVCVJ6b2hOqLJCDQP.N.p1wnGnfwxi",
+      "role": "member"
+    },
+    {
+      "_id": "4jq56ehe9mooc266h",
+      "name": "Himanshubunny",
+      "email": "bunny098@gmail.com",
+      "password": "$2b$10$Jvv19n0eIY6gAXlTLMRUDOL18Jilb0tepQhEwyyGtLObXP5abVlUC",
+      "role": "member"
+    },
+    {
+      "_id": "0161tepu6mooc34pj",
+      "name": "bunny",
+      "email": "bunny654@gmail.com",
+      "password": "$2b$10$arVxMad8Rlk/ZMP/Ec6si.ehd4M6mpGXWyrHmQv5iESsRs3jD8k6m",
+      "role": "admin"
+    },
+    {
+      "_id": "hwepzyir3moocenuh",
+      "name": "Himanshu ",
+      "email": "himanshu@gmail.com",
+      "password": "$2b$10$YXBj70sAXlWKxlYKXbExgemSE3hk3H4HRz78QE7/LiG7xSJl85UoW",
+      "role": "member"
+    },
+    {
+      "_id": "e08807b2d19df1d89c5d",
+      "name": "Bug Fixer",
+      "email": "fixer@test.com",
+      "password": "$2b$12$Lq6c/RMbPrpP.D8.tEpwGeN8/oV3pTB6fT3Al.3ZXEUtDjRyJLlAi",
+      "role": "member"
+    },
+    {
+      "_id": "408ff8bf019df1da29c4",
+      "name": "Bunny",
+      "email": "bunny@test.com",
+      "password": "$2b$12$9PZX0nW4D0RSOM7Dh8qrt.YtOhG4uC.j16lG1IMajwVLdptJXj98O",
+      "role": "member"
+    },
+    {
+      "_id": "703fee3e119df1e5d5e1",
+      "name": "Admin User",
+      "email": "admin@test.com",
+      "password": "$2b$12$YOljaB7KIiiZ63uBZvxVNuQ1WkHF1x3qVtahkRr0z7k5FOBg9VJWO",
+      "role": "admin"
+    },
+    {
+      "_id": "c4b1c92e819df1e91dd0",
+      "name": "Member User",
+      "email": "member@test.com",
+      "password": "$2b$12$AUKS3ia1JOwBbf/EeGXVSeCw3QEyRZOCOlurAnNzOt8mKIY1YAEIm",
+      "role": "member"
+    }
+  ],
+  "projects": [
+    {
+      "name": "Content creation for IG",
+      "createdBy": "bunny654@gmail.com",
+      "_id": "d5n78kcptmooc3jok",
+      "createdAt": "2026-05-02T12:44:55.268Z"
+    },
+    {
+      "name": "Marketing",
+      "_id": "c8615640019df1ebe184",
+      "createdAt": "2026-05-04T07:37:40.996440",
+      "createdBy": "admin@test.com"
+    }
+  ],
+  "tasks": [
+    {
+      "title": "Video 1",
+      "assignedTo": "bunny987@gmauil.com",
+      "projectId": "d5n78kcptmooc3jok",
+      "_id": "4ov0xec8smooc44d9",
+      "createdAt": "2026-05-02T12:45:22.077Z",
+      "status": "pending"
+    },
+    {
+      "title": "video 2",
+      "assignedTo": "bunny098@gmail.com",
+      "projectId": "d5n78kcptmooc3jok",
+      "_id": "tfrgf59s1mooc58wt",
+      "createdAt": "2026-05-02T12:46:14.621Z",
+      "status": "completed",
+      "qualityScore": 10
+    },
+    {
+      "title": "Verify App Flow",
+      "projectId": "d5n78kcptmooc3jok",
+      "priority": "high",
+      "status": "in-progress",
+      "_id": "e9f47b67419df1daabcd",
+      "createdAt": "2026-05-04T07:18:53.133355"
+    },
+    {
+      "title": "Admin Task",
+      "projectId": "d5n78kcptmooc3jok",
+      "priority": "high",
+      "status": "completed",
+      "assignedTo": "bunny@test.com",
+      "_id": "ec0d4aad719df1e7b852",
+      "createdAt": "2026-05-04T07:33:08.306861",
+      "qualityScore": 9
+    }
+  ]
+}
