@@ -218,7 +218,11 @@ const Dashboard = () => {
     { label: 'Total Tasks', value: tasks.length, icon: <Layout size={20} />, color: 'var(--primary)' },
     { label: 'Completed', value: tasks.filter(t => t.status === 'completed' || t.status === 'Done').length, icon: <ListChecks size={20} />, color: '#10b981' },
     { label: 'In Progress', value: tasks.filter(t => t.status === 'in-progress' || t.status === 'In Progress').length, icon: <Clock size={20} />, color: '#0ea5e9' },
-    { label: 'To Do', value: tasks.filter(t => t.status === 'pending' || t.status === 'To Do').length, icon: <AlertCircle size={20} />, color: '#f59e0b' },
+    user.role === 'member' ? (
+      { label: 'Your Rating', value: memberRatings[user.email] || 'N/A', icon: <Star size={20} />, color: memberRatings[user.email] ? getRatingColor(memberRatings[user.email]) : 'var(--text-muted)' }
+    ) : (
+      { label: 'To Do', value: tasks.filter(t => t.status === 'pending' || t.status === 'To Do').length, icon: <AlertCircle size={20} />, color: '#f59e0b' }
+    ),
   ];
 
   if (loading) return <div style={{ padding: '2rem', textAlign: 'center' }}>Loading your workspace...</div>;
@@ -227,8 +231,8 @@ const Dashboard = () => {
     <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '2rem' }}>
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem' }}>
         <div>
-          <h1 style={{ fontSize: '2rem', fontWeight: 800 }}>Workspace</h1>
-          <p style={{ color: 'var(--text-muted)' }}>Welcome back, {user.name} ({user.role})!</p>
+          <h1 style={{ fontSize: '2rem', fontWeight: 800 }}>{user.role === 'admin' ? 'Team Workspace' : 'Your Workspace'}</h1>
+          <p style={{ color: 'var(--text-muted)' }}>Welcome back, {user.name}!</p>
         </div>
         <div style={{ display: 'flex', gap: '1rem' }}>
           {user.role === 'admin' && (
@@ -369,7 +373,7 @@ const Dashboard = () => {
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}>
             <BarChart3 size={20} color="var(--primary)" />
             <h2 style={{ fontSize: '1.25rem', fontWeight: 700 }}>
-              {searchTerm || filterPriority !== 'all' ? 'Filtered Tasks' : 'Active Tasks'} 
+              {searchTerm || filterPriority !== 'all' ? 'Filtered Tasks' : (user.role === 'admin' ? 'Workspace Tasks' : 'Your Tasks')} 
               <span style={{ fontSize: '0.875rem', fontWeight: 400, color: 'var(--text-muted)', marginLeft: '0.5rem' }}>
                 ({filteredTasks.length})
               </span>
