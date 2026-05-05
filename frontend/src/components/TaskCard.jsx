@@ -14,6 +14,13 @@ const TaskCard = ({ task, onUpdate, onEdit, onDelete, userRole }) => {
     }
   };
 
+  const getScoreColor = (score) => {
+    const num = parseInt(score);
+    if (num <= 3) return '#ef4444'; // Red
+    if (num <= 8) return '#f59e0b'; // Orange
+    return '#10b981'; // Green
+  };
+
   const handleEvaluate = () => {
     onUpdate(task._id, { qualityScore: parseInt(score) });
     setShowEval(false);
@@ -66,15 +73,15 @@ const TaskCard = ({ task, onUpdate, onEdit, onDelete, userRole }) => {
                 <span style={{ 
                   fontSize: '0.75rem', 
                   fontWeight: 700, 
-                  color: 'var(--warning)',
+                  color: getScoreColor(task.qualityScore),
                   display: 'flex',
                   alignItems: 'center',
                   gap: '2px',
-                  background: 'rgba(245, 158, 11, 0.1)',
+                  background: `${getScoreColor(task.qualityScore)}15`,
                   padding: '2px 6px',
                   borderRadius: '4px'
                 }}>
-                  <Star size={12} fill="var(--warning)" />
+                  <Star size={12} fill={getScoreColor(task.qualityScore)} />
                   Score: {task.qualityScore}
                 </span>
               )}
