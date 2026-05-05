@@ -120,6 +120,13 @@ const Dashboard = () => {
     return averages;
   }, [tasks]);
 
+  const getRatingColor = (rating) => {
+    const num = parseFloat(rating);
+    if (num <= 3) return '#ef4444'; // Red
+    if (num <= 8) return '#f59e0b'; // Orange
+    return '#10b981'; // Green
+  };
+
   const handleSubmitTask = async (e) => {
     e.preventDefault();
     try {
@@ -453,14 +460,14 @@ const Dashboard = () => {
                         display: 'flex', 
                         alignItems: 'center', 
                         gap: '4px', 
-                        background: 'rgba(245, 158, 11, 0.1)', 
+                        background: `${getRatingColor(memberRatings[m.email])}15`, 
                         padding: '4px 8px', 
                         borderRadius: '6px',
-                        color: 'var(--warning)',
+                        color: getRatingColor(memberRatings[m.email]),
                         fontWeight: 700,
                         fontSize: '0.875rem'
                       }}>
-                        <Star size={14} fill="var(--warning)" />
+                        <Star size={14} fill={getRatingColor(memberRatings[m.email])} />
                         {memberRatings[m.email]}
                       </div>
                     )}
