@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: process.env.VERCEL ? '/' : '/Task-Manager-2/',
+  base: process.env.GITHUB_PAGES ? '/Task-Manager-2/' : '/',
   plugins: [react()],
   server: {
     port: 3000,
